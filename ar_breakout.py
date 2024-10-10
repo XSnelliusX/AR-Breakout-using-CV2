@@ -10,10 +10,6 @@ cap = cv2.VideoCapture(0)
 # Ball properties
 ball_radius = 20
 ball_color = (0, 255, 0)  # Green color
-initial_ball_position = [400, 200]  # Initial position (x, y)
-ball_position = initial_ball_position.copy()
-initial_ball_velocity = [15, -22.5]    # Initial velocity (vx, vy)
-ball_velocity = initial_ball_velocity.copy()
 
 # Game state
 game_over = False
@@ -35,7 +31,7 @@ def initialize_boxes(image_width, box_size, gap, max_rows=3):
     num_boxes_per_row = image_width // (box_width + gap)
     
     # Calculate the number of boxes based on available vertical space
-    num_boxes = num_boxes_per_row * max_rows
+    num_boxes = int(num_boxes_per_row * max_rows)
 
     for i in range(num_boxes):
         x = (i % num_boxes_per_row) * (box_width + gap)
@@ -210,10 +206,11 @@ with mp_hands.Hands(
             print("Ignoring empty camera frame.")
             continue
 
-        image_height, image_width, _ = image.shape
-
-        # Initialize boxes if not done yet
+        # Initialize boxes and ball position/velocity (only once)
         if not boxes_initialized:
+            image_height, image_width, _ = image.shape
+            ball_position = [np.random.randint(ball_radius + 50, image_width - ball_radius - 50), image_height - 50] # Initial position (x, y)
+            ball_velocity = [np.random.randint(-15, 15), -15] # Initial velocity (x, y)
             boxes = initialize_boxes(image_width, box_size, gap, 1)
             boxes_initialized = True
         
@@ -228,18 +225,17 @@ with mp_hands.Hands(
         # Show win screen if the player has won
         if game_over and is_winner:
             win_screen(image)
-        
         # Show game over screen if the player lost
         elif game_over:
             game_over_screen(image)
-
+            
         # Game logic if the game is not over
         if not game_over:
             # Update ball position
             ball_position[0] += ball_velocity[0]  # Update x position
             ball_position[1] += ball_velocity[1]  # Update y position
 
-            # Collision detection
+            # Wall Collision detection
             ball_position, ball_velocity = wall_collision(image_width, image_height, ball_position, ball_velocity)
 
             # Process the hand detection
@@ -286,15 +282,15 @@ with mp_hands.Hands(
                     score += 1
 
         # Display the frame
-        cv2.imshow('MediaPipe Hands', image)
+        cv2.imshow('AR Breackout', image)
 
         # Check for key presses
         key = cv2.waitKey(5) & 0xFF
         if key == 27:  # ESC key
             break
         elif key == ord('r'):  # 'r' key to restart
-            ball_position = initial_ball_position.copy()
-            ball_velocity = initial_ball_velocity.copy()
+            ball_position = [np.random.randint(ball_radius + 50, image_width - ball_radius - 50), image_height - 50]
+            ball_velocity = [np.random.randint(-15, 15), -15]
             boxes_initialized = False
             game_over = False
             is_winner = False  # Reset winning state
