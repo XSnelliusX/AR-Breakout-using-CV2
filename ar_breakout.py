@@ -112,52 +112,31 @@ def wall_collision(window_width, window_height, ball_position, ball_velocity):
     return ball_position, ball_velocity
 
 def line_collision(line_start, line_end, ball_position, ball_velocity):
-    # Increase the number of sub-steps for more precise detection
-    steps = 10
-    old_position = np.array(ball_position)
-    new_position = old_position + np.array(ball_velocity)
+    # Vector from line start to line end
+    line_vec = np.array([line_end[0] - line_start[0], line_end[1] - line_start[1]])
+    # Vector from line start to ball position
+    ball_vec = np.array([ball_position[0] - line_start[0], ball_position[1] - line_start[1]])
 
-    # Vector representation of the line segment
-    line_vec = np.array(line_end) - np.array(line_start)
-    line_len = np.linalg.norm(line_vec)
-    line_unit_vec = line_vec / line_len if line_len != 0 else np.array([0, 0])
+    # Squared length of the line segment
+    line_length_sq = np.dot(line_vec, line_vec)
 
-    for i in range(1, steps + 1):
-        interpolated_position = old_position + (new_position - old_position) * i / steps
+    # Projection factor of the ball vector onto the line vector
+    t = np.dot(ball_vec, line_vec) / line_length_sq
+    # Clamp t to the range [0, 1] to ensure the closest point is on the line segment
+    t = np.clip(t, 0, 1)
 
-        # Vector from line start to the interpolated ball position
-        line_to_ball_vec = interpolated_position - np.array(line_start)
+    # Closest point on the line segment to the ball
+    closest_point = np.array(line_start) + t * line_vec
+    # Distance from the ball to the closest point on the line segment
+    dist_to_closest_point = np.linalg.norm(np.array(ball_position) - closest_point)
 
-        # Projection of the ball onto the line
-        projection_length = np.dot(line_to_ball_vec, line_unit_vec)
-        projection_vector = line_unit_vec * projection_length
-
-        # Perpendicular vector from the line to the ball
-        perpendicular_vector = line_to_ball_vec - projection_vector
-        distance = np.linalg.norm(perpendicular_vector)
-
-        # Check if the ball intersects with the line segment
-        if distance < ball_radius and 0 <= projection_length <= line_len:
-            # Reflect the ball's velocity around the line normal
-            normal_vec = np.array([line_unit_vec[1], -line_unit_vec[0]])
-
-            # Determine which side of the line the ball is on
-            side = np.dot(ball_velocity, normal_vec)
-
-            # Only reflect if the ball is moving towards the line from either side
-            if side < 0:
-                normal_vec = -normal_vec  # Reverse the normal if on the opposite side
-
-            # Reflect the velocity
-            ball_velocity = ball_velocity - 2 * np.dot(ball_velocity, normal_vec) * normal_vec
-
-            # Correct ball's position slightly to avoid overlap in the next frame
-            correction_distance = ball_radius - distance
-            ball_position[0] = interpolated_position[0] + normal_vec[0] * correction_distance
-            ball_position[1] = interpolated_position[1] + normal_vec[1] * correction_distance
-
-            # Stop further checking in this loop to avoid multiple reflections
-            break
+    # If the ball is touching or intersecting the line segment (within the ball radius + 5 pixels)
+    if dist_to_closest_point <= ball_radius + 5:
+        # Normal vector to the line segment
+        normal_vec = np.array([-line_vec[1], line_vec[0]]) / np.sqrt(line_length_sq)
+        # Reflect the ball's velocity over the normal vector
+        ball_velocity = np.array(ball_velocity, dtype=np.float64)
+        ball_velocity -= 2 * np.dot(ball_velocity, normal_vec) * normal_vec
 
     return ball_velocity
 
