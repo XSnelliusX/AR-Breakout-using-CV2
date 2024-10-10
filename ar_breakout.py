@@ -14,7 +14,6 @@ ball_color = (0, 255, 0)  # Green color
 # Game state
 game_over = False
 is_winner = False
-score = 0
 
 # Box properties
 boxes_initialized = False
@@ -163,7 +162,6 @@ def line_collision(line_start, line_end, ball_position, ball_velocity):
     return ball_velocity
 
 def box_collision(boxes, ball_position, ball_velocity):
-    global score
     for box in boxes:
         x, y, w, h = box
         ball_x, ball_y = ball_position
@@ -173,12 +171,10 @@ def box_collision(boxes, ball_position, ball_velocity):
             if abs(ball_x - x) <= ball_radius and ball_velocity[0] > 0:  # Left edge collision
                 ball_velocity[0] = -abs(ball_velocity[0])  # Bounce to the left
                 boxes.remove(box)
-                score += 1
                 break
             elif abs(ball_x - (x + w)) <= ball_radius and ball_velocity[0] < 0:  # Right edge collision
                 ball_velocity[0] = abs(ball_velocity[0])  # Bounce to the right
                 boxes.remove(box)
-                score += 1
                 break
 
         # Check for collision with the top or bottom edges
@@ -186,12 +182,10 @@ def box_collision(boxes, ball_position, ball_velocity):
             if abs(ball_y - y) <= ball_radius and ball_velocity[1] > 0:  # Top edge collision
                 ball_velocity[1] = -abs(ball_velocity[1])  # Bounce upward
                 boxes.remove(box)
-                score += 1
                 break
             elif abs(ball_y - (y + h)) <= ball_radius and ball_velocity[1] < 0:  # Bottom edge collision
                 ball_velocity[1] = abs(ball_velocity[1])  # Bounce downward
                 boxes.remove(box)
-                score += 1
                 break
 
     return boxes, ball_velocity
@@ -278,8 +272,6 @@ with mp_hands.Hands(
                     boxes.remove(box)
                     # Bounce the ball
                     ball_velocity[1] = -ball_velocity[1]
-                    # Increment score
-                    score += 1
 
         # Display the frame
         cv2.imshow('AR Breackout', image)
@@ -294,6 +286,5 @@ with mp_hands.Hands(
             boxes_initialized = False
             game_over = False
             is_winner = False  # Reset winning state
-            score = 0
 
     cap.release()
