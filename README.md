@@ -51,8 +51,21 @@ python ar_breakout.py
 
 Make sure your webcam is enabled, as the game uses real-time video feed to track your hand movements.
 
+
+
 ## Gameplay Controls
 
 - **Move your hand**: Place your hand in front of the camera, and adjust the position of your thumb and index finger to control the paddle. 
 - **Avoid missing the ball**: Just like in the original game, prevent the ball from falling off the screen by bouncing it with your virtual paddle.
 - **Break all bricks**: The goal is to break all the bricks on the screen using the ball.
+
+## Test Files
+This repository also includes two test scripts that were used for experimenting with MediaPipe and collision detection. These files are not required to play the game but are helpful for understanding how the individual components work:
+
+- `bounzingBall.py`:
+This script tests a simple bouncing ball animation with boundary collision detection. It showcases how a ball can interact with the edges of the screen, changing direction and color upon impact.
+
+- `handRecognizion.py`:
+This script demonstrates how to use MediaPipe to detect and track hand landmarks in real-time, focusing on the thumb and index finger. It draws the detected hand landmarks on the webcam feed for visual feedback.
+
+These files were developed as experiments to test functionality and do not directly contribute to the game.
