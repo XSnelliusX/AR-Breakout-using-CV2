@@ -1,6 +1,6 @@
 # AR Breakout Game
 
-This repository contains an Augmented Reality (AR) version of the classic game **Breakout**. In this version, the traditional static platform at the bottom of the screen is replaced by a dynamic, interactive platform—**your hand**! Specifically, a line is drawn between your thumb and index finger, allowing you to control the paddle in real-time.
+This repository contains an very basic Augmented Reality (AR) version of the classic game **Breakout**. In this version, the traditional static platform at the bottom of the screen is replaced by a dynamic, interactive platform—**your hand**! Specifically, a line is drawn between your thumb and index finger, allowing you to control the paddle in real-time.
 
 ## Features
 
