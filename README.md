@@ -16,17 +16,11 @@ This repository contains an very basic Augmented Reality (AR) version of the cla
 
 ## Requirements
 
-To run the game, you'll need the following:
+To run the game, you'll need the following dependencies:
 
 - **Python 3.7+**
 - **OpenCV** for real-time computer vision
 - **MediaPipe** for hand tracking
-
-You can install the required packages using the following command:
-
-```bash
-pip install opencv-python mediapipe
-```
 
 ## Getting Started
 
